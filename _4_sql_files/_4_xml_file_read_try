@@ -1,0 +1,4 @@
+select *
+from 
+(select XMLPARSE(DOCUMENT convert_from(pg_read_binary_file('match_1693_24947.xml'), 'UTF8'))) X
+unnest (xpath('/MatchDetailWithTimeline/MatchInformation'), myxml) x1

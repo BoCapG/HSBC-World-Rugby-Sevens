@@ -1,0 +1,12 @@
+_9_sql_files
+
+_0_table_row_counts_and_description: This file does a select * and select count(*) on all tables in the schema _0_original_data and gives you the row counts of each of these tables.
+
+_1_create_team_data_with_timezones: This file adds a 'home' timezone for each of the teams. This is then used to estimate the number of timezones away from home a team is playing at each tournament. 
+
+_2_join_head_to_head_with_match_fixtures: Join script for head_to_head table with match_fixtures. The join is partial as the head_to_head is a record and thus not available for all match_fixtures. 
+
+_3_create_match_fixtures_features: Script which adds features to the match_fixtures tables and splits each match over two rows. 
+
+_4_xml_file_read_try: File in which we have started to work on reading xml into a psql table directly. 
+

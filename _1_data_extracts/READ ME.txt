@@ -1,0 +1,14 @@
+_1_data_extracts
+
+dictionaires: file of teamids and team names;
+
+match_file_xmls: all match tables for seasons 2015/16 and 2016/17 in xml format. The files 	are named match_tournamentid_matchid.xlm;
+
+match_with_timeline_file_xlms: all match with timeline files for seasons 2015/16 and 		2016/17 in xml format. The files are named 
+	matchwithtimeline_tournamentid_matchid.xlm	
+
+playerprofile_file_xlms: all player profiles for the season 2015/16 and 2016/17 in xml 	
+	format. the files are named playerprofile_tournamentid_personid.xlm
+
+playerprofilewithtestbreakdown_file_xlms: all player profiles with test breakdown for the 	season 2015/16 and 2016/17 in xml format. The files are named 
+	playerprofilewithtestbreakdown_tournamentid_personid.xlm.

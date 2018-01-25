@@ -1,0 +1,43 @@
+-- Description of the different tables in _0_original_data at the moment
+select * from _0_original_data.match_fixtures; -- match fixtures
+select count(*) from _0_original_data.match_fixtures; -- 900 rows
+
+select * from _0_original_data.all_time_head_to_head; -- events per match
+select count(*) from _0_original_data.all_time_head_to_head; -- 889 rows
+
+select * from _0_original_data.event_tables; --Team standing at the end of event
+select count(*) from _0_original_data.event_tables; --320 rows
+
+select * from _0_original_data.full_squads; --Players in each team in each tournament
+select count(*) from _0_original_data.full_squads_info; --3918 rows
+
+select * from _0_original_data.management; --team manager name for each team in each tournament
+select count(*) from _0_original_data.management; --321 rows
+
+select * from _0_original_data.player_records_in_event; --personal records per method and tournament
+select count(*) from _0_original_data.player_records_in_event; --14570 rows
+
+select * from _0_original_data.player_records_in_event_all_time; --personal records per method and tournament all time
+select count(distinct method) from _0_original_data.player_records_in_event_all_time --113900 rows, 5564 individual id's, 8 methods
+
+select * from _0_original_data.player_records_match_record_in_event; --in match personal records per event
+select count(*) from _0_original_data.player_records_match_record_in_event; --9000 rows
+
+select * from _0_original_data.player_records_match_record_in_event_all_time; --in match personal records all time
+select count(*) from _0_original_data.player_records_match_record_in_event_all_time; --2620 rows
+
+select * from _0_original_data.team_data_per_tournament; --team id for each team playing in a tournament
+select count(*) from _0_original_data.team_data_per_tournament; --320 rows
+
+select * from _0_original_data.team_match_records_in_event; --match records by team in an event/tournament
+select count(*) from _0_original_data.team_match_records_in_event; --2617 rows
+
+select * from _0_original_data.team_match_records_in_event_all_time; --match records by team all time
+select count(*) from _0_original_data.team_match_records_in_event_all_time; --2820 rows
+
+select * from _0_original_data.team_records_in_event; --tournament records by team
+select count(*) from _0_original_data.team_records_in_event; --2680 rows
+
+select * from _0_original_data.team_record_in_event_all_time; --tournament records by team all time
+select count(*) from _0_original_data.team_record_in_event_all_time; --2680 rows
+

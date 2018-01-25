@@ -1,0 +1,5 @@
+_10_data_views
+
+These are csv extracts of the data views I have created. You have loaded these into postgres into schema _1_data_views. 
+
+The csv's have been created using the sql scripts in _9_sql_files and _11_insights_creation. 

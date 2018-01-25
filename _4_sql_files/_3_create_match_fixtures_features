@@ -1,0 +1,147 @@
+-- File to recreate the match_fixtures notebook with two rows for each match to have a row per team. 
+
+-- alter team1score and team2score datatypes
+ALTER TABLE _1_data_views.match_fixtures_full_row_per_match
+	ALTER team1score DROP DEFAULT
+    ,ALTER team1score type integer USING team1score::integer;
+
+ALTER TABLE _1_data_views.match_fixtures_full_row_per_match
+	ALTER team2score DROP DEFAULT
+    ,ALTER team2score type integer USING team2score::integer;
+
+-- Create column which indicates which team won, if 0 the game ended in a draw
+alter table _1_data_views.match_fixtures_full_row_per_match add column if not exists winner int;
+update _1_data_views.match_fixtures_full_row_per_match set winner = (team1score - team2score);
+update _1_data_views.match_fixtures_full_row_per_match set winner = 1 where winner::int > 0;
+update _1_data_views.match_fixtures_full_row_per_match set winner = 2 where winner::int < 0;
+select team1score, team2score, winner from _1_data_views.match_fixtures_full_row_per_match;
+
+-- Create two temporary tables which are exact copies of match_fixtures_full
+drop table if exists _1_data_views.temp1;
+drop table if exists _1_data_views.temp2;
+create table _1_data_views.temp1 as table _1_data_views.match_fixtures_full_row_per_match;
+create table _1_data_views.temp2 as table _1_data_views.match_fixtures_full_row_per_match;
+
+-- For temp1 rename all team1 columns to reflect a general nature and drop all team2 colums
+alter table _1_data_views.temp1 rename column team1id to team_id;
+alter table _1_data_views.temp1 rename column team1name to team_name;
+alter table _1_data_views.temp1 rename column team1score to team_score;
+alter table _1_data_views.temp1 rename column team2id to opponent_team_id;
+alter table _1_data_views.temp1 rename column team2name to opponent_team_name;
+alter table _1_data_views.temp1 rename column team2score to opponent_team_score;
+alter table _1_data_views.temp1 rename column height_mean_team1 to height_mean;
+alter table _1_data_views.temp1 rename column height_min_team1 to height_min;
+alter table _1_data_views.temp1 rename column height_max_team1 to height_max;
+alter table _1_data_views.temp1 rename column weight_mean_team1 to weight_mean;
+alter table _1_data_views.temp1 rename column weight_min_team1 to weight_min;
+alter table _1_data_views.temp1 rename column weight_max_team1 to weight_max;
+alter table _1_data_views.temp1 rename column age_mean_team1 to age_mean;
+alter table _1_data_views.temp1 rename column age_min_team1 to age_min;
+alter table _1_data_views.temp1 rename column age_max_team1 to age_max;
+alter table _1_data_views.temp1 rename column player_count_team1 to player_count;
+alter table _1_data_views.temp1 rename column timezone_team_1 to timezone;
+alter table _1_data_views.temp1 drop column index_team1,
+								drop column team_id_team1,
+                                drop column index_team2,
+                                drop column team_id_team2,
+                                drop column height_mean_team2,
+                                drop column height_min_team2,
+                                drop column height_max_team2,
+                                drop column weight_mean_team2,
+                                drop column weight_min_team2,
+                                drop column weight_max_team2,
+                                drop column age_mean_team2,
+                                drop column age_min_team2,
+                                drop column age_max_team2,
+                                drop column player_count_team2,
+                                drop column timezone_team_2;
+
+-- Add a column seeded_first which is 1 for the teams that were seeded first. 
+alter table _1_data_views.temp1 add column if not exists seeded_first int;
+update _1_data_views.temp1 set seeded_first = 1;
+
+-- For temp2 rename all team2 columns to reflect a general nature and drop all team1 colums
+alter table _1_data_views.temp2 rename column team2id to team_id;
+alter table _1_data_views.temp2 rename column team2name to team_name;
+alter table _1_data_views.temp2 rename column team2score to team_score;
+alter table _1_data_views.temp2 rename column team1id to opponent_team_id;
+alter table _1_data_views.temp2 rename column team1name to opponent_team_name;
+alter table _1_data_views.temp2 rename column team1score to opponent_team_score;
+alter table _1_data_views.temp2 rename column height_mean_team2 to height_mean;
+alter table _1_data_views.temp2 rename column height_min_team2 to height_min;
+alter table _1_data_views.temp2 rename column height_max_team2 to height_max;
+alter table _1_data_views.temp2 rename column weight_mean_team2 to weight_mean;
+alter table _1_data_views.temp2 rename column weight_min_team2 to weight_min;
+alter table _1_data_views.temp2 rename column weight_max_team2 to weight_max;
+alter table _1_data_views.temp2 rename column age_mean_team2 to age_mean;
+alter table _1_data_views.temp2 rename column age_min_team2 to age_min;
+alter table _1_data_views.temp2 rename column age_max_team2 to age_max;
+alter table _1_data_views.temp2 rename column player_count_team2 to player_count;
+alter table _1_data_views.temp2 rename column timezone_team_2 to timezone;
+alter table _1_data_views.temp2 drop column index_team2,
+								drop column team_id_team2,
+                                drop column index_team1,
+                                drop column team_id_team1,
+                                drop column height_mean_team1,
+                                drop column height_min_team1,
+                                drop column height_max_team1,
+                                drop column weight_mean_team1,
+                                drop column weight_min_team1,
+                                drop column weight_max_team1,
+                                drop column age_mean_team1,
+                                drop column age_min_team1,
+                                drop column age_max_team1,
+                                drop column player_count_team1,
+                                drop column timezone_team_1;
+
+-- Add a column seeded_first which is 0 for the teams that were seeded second. 
+alter table _1_data_views.temp2 add column if not exists seeded_first int;
+update _1_data_views.temp2 set seeded_first = 0;
+
+-- Union the two temp tables back together
+drop table if exists _1_data_views.match_fixtures_features_row_per_team;
+create table _1_data_views.match_fixtures_features_row_per_team 
+as select city,eventname,gmtdifference,pool,kickoff,matchid,matchnumber,stadium,stage,status,team_id,team_name,team_score,
+opponent_team_id,opponent_team_name,opponent_team_score,tournament_id,height_mean,height_max,height_min,weight_mean,
+weight_max,weight_min,age_mean,age_max,age_min,player_count,timezone,winner,seeded_first
+from _1_data_views.temp1
+union 
+select city,eventname,gmtdifference,pool,kickoff,matchid,matchnumber,stadium,stage,status,team_id,team_name,team_score,
+opponent_team_id,opponent_team_name,opponent_team_score,tournament_id,height_mean,height_max,height_min,weight_mean,
+weight_max,weight_min,age_mean,age_max,age_min,player_count,timezone,winner,seeded_first
+from _1_data_views.temp2
+order by tournament_id, matchnumber;
+
+-- Creating the time difference for each team
+alter table _1_data_views.match_fixtures_features_row_per_team add column if not exists team_gmtdifference text,
+												  			   add column if not exists travel_timedifference int,
+                                                  			   add column if not exists travel_direction_clockwise text;
+update _1_data_views.match_fixtures_features_row_per_team set team_gmtdifference = split_part(timezone,' ',2);
+
+-- we convert the gmtdifference and team_gmtdifference to int
+ALTER TABLE _1_data_views.match_fixtures_features_row_per_team
+	ALTER gmtdifference DROP DEFAULT
+    ,ALTER gmtdifference type double precision USING gmtdifference::double precision;
+
+ALTER TABLE _1_data_views.match_fixtures_features_row_per_team
+	ALTER team_gmtdifference DROP DEFAULT
+    ,ALTER team_gmtdifference type integer USING team_gmtdifference::integer;
+
+-- We calculate the time travelled
+update _1_data_views.match_fixtures_features_row_per_team set travel_timedifference = team_gmtdifference - gmtdifference;
+
+-- We indicate whether travel is clockwise or counterclockwise, i.e. 1 indicates clockwise, 0 counter clockwise
+update _1_data_views.match_fixtures_features_row_per_team set travel_direction_clockwise = True where travel_timedifference >= 0;
+update _1_data_views.match_fixtures_features_row_per_team set travel_direction_clockwise = False where travel_timedifference <= 0;
+
+-- Drop temp1 and temp2
+drop table if exists _1_data_views.temp1;
+drop table if exists _1_data_views.temp2;
+
+-- View the data to see if the union went correctly
+select * from _1_data_views.match_fixtures_features_row_per_team where matchnumber = '45' order by tournament_id;
+
+-- event tables of event t-1 to event t?
+
+
+

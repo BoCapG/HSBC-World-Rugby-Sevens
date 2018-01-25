@@ -1,0 +1,61 @@
+-- Creating a table with timezones linked to the different teams
+
+-- Create a new table which has each team once
+drop table if exists _1_data_views.team_data_with_timezone;
+create table _1_data_views.team_data_with_timezone 
+as select distinct(teamid), teamname 
+from _0_original_data.team_data_per_tournament;
+
+-- Add a column timezone to the table. 
+alter table _1_data_views.team_data_with_timezone add column timezone text; 
+
+-- Add the timezones for each country. Note:
+--    - Russia stretches multiple timezones. For the purpose of this table, we set Russia to be +3 which is the  Moscow timezone.
+--    - The USA teams trains year round in San Diego (wikipedia fact), hence the USA timezone is the San diego timezone. 
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +3' where teamid IN ('2415','3911','2745');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +13' where teamid IN('2413','2416');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT -8' where teamid IN('2422'); 
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +1' where teamid IN('3913');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +0' where teamid IN('2419','2412','3921','3910');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +9' where teamid IN('2423','3898');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +11' where teamid IN('2409');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT -2' where teamid IN('3886');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +2' where teamid IN('3924','2420','2414');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +14' where teamid IN('2418');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT -3' where teamid IN('3887','2408');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +10' where teamid IN('3906');
+update _1_data_views.team_data_with_timezone set timezone = 'GMT -5' where teamid = '2410';
+update _1_data_views.team_data_with_timezone set timezone = 'GMT +8' where teamid IN('3895');
+
+-- Show the resulting table
+select * from _1_data_views.team_data_with_timezone;
+
+-- Update datatype of the teamid in the team_data_with_timezone:
+ALTER TABLE _1_data_views.team_data_with_timezone
+	ALTER teamid DROP DEFAULT
+    ,ALTER teamid type text USING teamid::text;
+
+-- Merge team_data_with_timezones with match_fixtures_with_player_stats_full to create match_fixtures_full_row_per_match
+drop table if exists _1_data_views.temp_match_fixtures_full_row_per_match;
+create table _1_data_views.temp_match_fixtures_full_row_per_match 
+as select a.*, b.timezone as timezone_team_1
+from _1_data_views.match_fixtures_with_player_stats_full as a
+left join _1_data_views.team_data_with_timezone as b
+on a.team1id = b.teamid;
+
+drop table if exists _1_data_views.match_fixtures_full_row_per_match;
+create table _1_data_views.match_fixtures_full_row_per_match 
+as select a.*, b.timezone as timezone_team_2
+from _1_data_views.temp_match_fixtures_full_row_per_match as a
+left join _1_data_views.team_data_with_timezone as b
+on a.team2id = b.teamid;
+
+-- Drop the temporary table
+drop table if exists _1_data_views.temp_match_fixtures_full_row_per_match;
+
+-- Review the join
+select * from _1_data_views.match_fixtures_full_row_per_match;
+
+
+
+

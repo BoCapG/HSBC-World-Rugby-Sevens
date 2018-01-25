@@ -1,0 +1,30 @@
+-- Merging all_time_head_to_head with match_fixtures
+
+-- Joining key in all_time_head_to_head: team1points, team2points, tournament_id, team1id, team2id
+-- Joining key in match_fixtures: team1point, team2points, tournament_id, team1id, team2id
+
+ALTER TABLE _0_original_data.all_time_head_to_head DROP COlUMN IF EXISTS index;
+ALTER TABLE _0_original_data.match_fixtures DROP COlUMN IF EXISTS index;
+
+DROP TABLE IF EXISTS _1_data_views.match_fixtures_with_information;
+CREATE TABLE _1_data_views.match_fixtures_with_information 
+AS SELECT a.*, b.drawn, b.played, b.team1conversions, b.team1dropgoals, b.team1penalties, b.team1points
+, b.team1tries, b.team1won,b.team2conversions, b.team2dropgoals, b.team2penalties, b.team2points
+, b.team2tries, b.team2won, B.team1id as teamid1, b.team2id as teamid2, b.tournament_id as tournament_id2
+FROM _0_original_data.match_fixtures as A 
+full JOIN _0_original_data.all_time_head_to_head as B
+ON A.team1id = B.team1id 
+AND A.team2id = B.team2id
+AND A.team1score = B.team1points
+AND A.team2score = B.team2points
+--AND A.tournament_id = B.tournament_id
+ORDER BY matchid;
+
+ALTER TABLE _1_data_views.match_fixtures_with_information DROP COlUMN IF EXISTS attendance, 
+	DROP COLUMN IF EXISTS status;
+
+SELECT * FROM _1_data_views.match_fixtures_with_information 
+WHERE tournament_id = '1611' and team1id = '2408';
+--or tournament_id2 = '1611'
+
+select * FROM _1_data_views.match_fixtures_with_information;
