@@ -1,0 +1,7 @@
+_11_insights creation
+
+_01_squad_data_analysis: This notebook adds information on the team (height, weight, age) to the match_fixtures table in the schema _0_original_data
+
+_02_rankings: This notebook configures the different records tables. All 'All Time' tables have the same rankings for each event and reflect the latest records, i.e. these tables are updated historically to reflect only the recent top. The notebook takes the names from the last tournament we have access to and reads these into a separate schema into psql. 
+
+_03_previous_tournament_performance: this notebook creates an overview of how many points each team scored in each series event over the past two years.
